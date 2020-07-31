@@ -13,8 +13,8 @@
 2. Per-base NT distribution
     1. ![mean_quality_scores_for_all_files](https://user-images.githubusercontent.com/64332514/88987546-20c09300-d28b-11ea-8bfc-2e2f586ec137.png)
     2. ```A qscore of 33 is 0.0005% error and would be a good quality score value for determining if an index is of high enough quality while still allowing for naturally low quality scores due to noise/sequencing errors.  33 was determined based on the mean qscores of each position in the index which averaged around 35.  33, while determined abitrarily, seems like it would function as a decent cutoff based on this data.   The qscore of the index must be higher than that of the biological read due to its importance in demultiplexing. For this reason if the read is below an average qscore of 25 (.00316% error) it is okay as after alignment the coverage provided by short read technologies would be able to result in the formation of a consensus sequence if there are errors in the some of the positions with low qscores.```
-    3. ```
-    7304664 indices have Ns in them. zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R[2,3]_001.fastq.gz | awk 'BEGIN {count=0} {if(NR%4==2 && match($1, "N") != 0) ++count} END {print count}' was first used and verified using  zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R[2,3]_001.fastq.gz | sed -n '2~4p' | grep -c "N"
+    3.
+    ```7304664 indices have Ns in them. zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R[2,3]_001.fastq.gz | awk 'BEGIN {count=0} {if(NR%4==2 && match($1, "N") != 0) ++count} END {print count}' was first used and verified using  zcat /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R[2,3]_001.fastq.gz | sed -n '2~4p' | grep -c "N"
     ```
     
 ## Part 2
