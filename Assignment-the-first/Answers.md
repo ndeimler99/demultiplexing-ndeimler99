@@ -11,7 +11,7 @@
 | 1294_S1_L008_R4_001.fastq.gz | Read Two |
 
 2. Per-base NT distribution
-    1. Use markdown to insert your 4 histograms here.
+    1. ![mean_quality_scores_for_all_files](https://user-images.githubusercontent.com/64332514/88987546-20c09300-d28b-11ea-8bfc-2e2f586ec137.png)
     2. ```Your answer here```
     3. ```Your answer here```
     
