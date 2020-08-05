@@ -159,7 +159,7 @@ def print_dict(indexes, dictionary, correct, hopped, errors, accurate):
     
     with open("Demultiplexed_Summary.txt", "a") as fh:
         #opens summarys stats
-        fh.write("Total Number of Reads: " + str(hopped + errors + correct))
+        fh.write("Total Number of Reads: " + str(hopped + errors + correct) + "\n")
         fh.write("Number of Matching Reads: " + str(correct) + "\n")
         fh.write("Number of Hopped Reads: " + str(hopped) + "\n")
         fh.write("Number of Low Quality Indexed Reads: " + str(errors) + "\n")
