@@ -13,9 +13,9 @@ Outputs:
 	Demultiplexed_Summary.txt
 		Contains Summary Stats: 
 			Total Number of Reads
-			Total Number of Correct Reads
-			Total Number of Reads in which Index Hopping Occured
-			Total Number of Reads in which the Indices were Low Quality or Unknown (sequencing error)
+			Total Number of Correct Reads and %Correct Reads
+			Total Number of Reads in which Index Hopping Occured and %index hopped reads
+			Total Number of Reads in which the Indices were Low Quality or Unknown (sequencing error) and %reads with these characteristics
 		Tab Delimited Table
 			Contains the Number of all Correct Reads sorted in Descending order by Number of Reads
 			Contains the Number of all permutations of Index Hopped Reads sorted in Descending Order by Number of Reads

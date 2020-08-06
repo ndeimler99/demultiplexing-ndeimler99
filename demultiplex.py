@@ -159,20 +159,23 @@ def print_dict(indexes, dictionary, correct, hopped, errors, accurate):
     
     with open("Demultiplexed_Summary.txt", "a") as fh:
         #opens summarys stats
-        fh.write("Total Number of Reads: " + str(hopped + errors + correct) + "\n")
-        fh.write("Number of Matching Reads: " + str(correct) + "\n")
-        fh.write("Number of Hopped Reads: " + str(hopped) + "\n")
-        fh.write("Number of Low Quality Indexed Reads: " + str(errors) + "\n")
+        total = hopped+errors+correct
+        fh.write("Total Number of Reads: " + str(total) + "\n")
+        fh.write("Number of Matching Reads: " + str(correct) + "\t" + str(correct/total * 100) +"\n")
+        fh.write("Number of Hopped Reads: " + str(hopped) +  "\t" + str(hopped/total * 100) +"\n")
+        fh.write("Number of Low Quality Indexed Reads: " + str(errors) + "\t" + str(errors/total * 100) + "\n")
         
-        fh.write("Index One Name\tIndex One Sequence\tIndex Two Name\tIndex Two Sequence\tOccurences\n")
+        fh.write("Index One Name\tIndex One Sequence\tIndex Two Name\tIndex Two Sequence\tOccurences\tPercent Occurence\n")
         
         for item in sorted(accurate, key=accurate.get, reverse=True):
             #for item in dictionary where no hoppping occured
-            fh.write(indexes[item[0]] + "\t" + item[0] + "\t" +  indexes[item[1]] + "\t" +  item[1]  + "\t" + str(accurate[item]) + "\n")
+            percent = float (accurate[item] / total) * 100
+            fh.write(indexes[item[0]] + "\t" + item[0] + "\t" +  indexes[item[1]] + "\t" +  item[1]  + "\t" + str(accurate[item]) + "\t" + str(percent) + "\n")
 
         for item in sorted(dictionary, key=dictionary.get, reverse=True):
             #for item in hopping dictionary
-            fh.write(indexes[item[0]] + "\t" + item[0] + "\t" +  indexes[item[1]] + "\t" +  item[1]  + "\t" + str(dictionary[item]) + "\n") 
+            percent = float(dictionary[item] / total) * 100
+            fh.write(indexes[item[0]] + "\t" + item[0] + "\t" +  indexes[item[1]] + "\t" +  item[1]  + "\t" + str(dictionary[item]) + "\t" + str(percent) + "\n") 
             
             #print(indexes[item[0]], indexes[item[1]], item[0], item[1],dictionary[item], sep="\t") 
     pass
