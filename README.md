@@ -1,5 +1,5 @@
 # Description
-	This program will analyze Illumina FastQ data output and demultiplex the multiplexed data, as well as discard indexed reads in which the indices contain an N or fall below an average quality score of 30.  This program does not, however, determine the quality score of the entire read nor does it error correct low quality indices.  
+	This program (written in Python3) will analyze Illumina FastQ data output and demultiplex the multiplexed data, as well as discard indexed reads in which the indices contain an N or fall below an average quality score of 30.  This program does not, however, determine the quality score of the entire read nor does it error correct low quality indices.  
 ## Inputs:  
 	-f1 = File One (Must be FASTQ) - Read One (Actual Sequence of Read One)  
 	-f2 = File Two (Must be FASTQ) - Read Two (Index One Sequence)  
