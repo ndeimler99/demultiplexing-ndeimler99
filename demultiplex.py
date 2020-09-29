@@ -5,6 +5,7 @@ import gzip
 import itertools
 
 def get_args():
+    '''allows for user input of files as well as a barcode file'''
     parser = argparse.ArgumentParser(description = "Demultiplexing Algorithm")
     parser.add_argument("-f1", "--fileOne", help="What is your read file name?", required = True)
     parser.add_argument("-f2", "--fileTwo", help="What is your Read 2 file name? (Index One)", required = True)
@@ -19,31 +20,29 @@ readTwo = args.fileTwo
 readThree = args.fileThree
 readFour = args.fileFour
 barcodes = args.barcodes
+complement = {"A" : "T", "C" : "G", "G" : "C", "T" : "A", "N" : "N"}
 
 def rev_complement(stringInput):
     '''takes stringInput parameter and returns the reverse complement of the input'''
     #reverse string
     reverse = stringInput[::-1]
     #replace with commplement
-    complement = {"A" : "T", "C" : "G", "G" : "C", "T" : "A", "N" : "N"}
     output = "".join([complement[base] for base in reverse])
     
     return output
 
 def open_files(indexes):
-    '''Creates Dictionary of barcodes with names as well as opening output files'''
+    '''Creates Dictionary of barcodes with names as well as opening output files based on indexes (list)'''
     #find out what column is index and what column is index sequence
     #create dictionary with index as keys and index sequence as barcodes
     fileList = {}
 
-    for item in indexes.keys():
+    for item in indexes():
         #for every barcode create name of barcode "_R1" and "_R2" files
-        count=1
-        name = indexes[item] + "_R" + str(count)
+        name = indexes[item] + "_R1"
         fh = open(name, "a")
         fileList[name] = fh
-        count+=1
-        name = indexes[item] + "_R" + str(count)
+        name = indexes[item] + "_R2"
         fh = open(name, "a")
         fileList[name] = fh   
     #create unmatched and hopped R1 and R2 files
@@ -64,14 +63,14 @@ def open_files(indexes):
     return fileList
 
 def close_files(fileList):
-    '''Cloes all files opened in open_files()'''
+    '''Cloes all files opened in open_files(), fileList is a list of file objects'''
     #takes file list created by open_files method and closes all files
     for item in fileList.values():
         item.close()
     return "Succesfully closed"
 
 def write_out(records, recordType, fileList):
-    '''used to write to respective files'''
+    '''used to write to respective files, records is the record to write out (list of length four, each line of fastq file), recordType is string corresponding to hopped, or lowqual.  if any other string is inputted here, the record is read as proper, fileList is list of file objects'''
     for i in range(len(records[0])):
         #adds new line characters to the end of the records so writelines can be used
         records[0][i] = records[0][i] + "\n"
@@ -101,8 +100,6 @@ def quality_score_check(qScores):
     for item in qScores:
         #print(item)
         sum += ord(item) - 33
-        #if ord(item) - 33 < 30:
-            #return False
     
     avg = sum / len(qScores)
     #print(len(qScores))
@@ -182,6 +179,7 @@ def print_dict(indexes, dictionary, correct, hopped, errors, accurate):
     
 
 def demultiplex(index, value, accurate):
+    '''main demultiplexing function'''
     hopped = 0
     lowQuality = 0
     correct = 0
@@ -216,45 +214,38 @@ def demultiplex(index, value, accurate):
                 records[0][0] = records[0][0] + ":" + barcodesAppend
                 records[3][0] = records[3][0] + ":" + barcodesAppend
 
-                #if records[1][1] not in index.keys():
-                    #indexOne = rev_complement(records[1][1])
-                    #indexTwo = records[2][1]
-                #else:
-                    #indexTwo = rev_complement(records[2][1])
-                    #indexOne = records[1][1]
                 indexOne = records[1][1]
                 indexTwo = rev_complement(records[2][1])
                 
-                #if the indexes in the index dictionary
-                if indexOne in index.keys() and indexTwo in index.keys():
-                    #if they pass the quality score check
-                    if quality_score_check(records[1][3]) and quality_score_check(records[2][3]):
-                        #if it is high enough quality
-                        #if they are the same (no hopping)
-                        if indexOne == indexTwo:
-                            #they are the same
-                            write_out(records, "yay", fileList)
-                            correct += 1
-                            accurate[(indexOne, indexOne)] += 1
-                        else:
-                            #index hopping occured
-                            write_out(records, "hopped", fileList)
-                            hopped += 1
-                            tupleDict = (indexOne, indexTwo)
-                            value[tupleDict] += 1
-                    else:
-                        #quality is low
-                        #print("low")
-                        write_out(records, "lowQual", fileList)
-                        lowQuality += 1
-                else:
-                    #index was not in the dictionary, why?
-                    if "N" in indexOne or "N" in indexTwo:
+                if "N" in indexOne or "N" in indexTwo:
                         #index contained an N
                         write_out(records, "lowQual", fileList)
                         lowQuality += 1
+                else
+                    #if the indexes in the index dictionary
+                    if indexOne in index and indexTwo in index:
+                        #if they pass the quality score check
+                        if quality_score_check(records[1][3]) and quality_score_check(records[2][3]):
+                            #if it is high enough quality
+                            #if they are the same (no hopping)
+                            if indexOne == indexTwo:
+                                #they are the same
+                                write_out(records, "yay", fileList)
+                                correct += 1
+                                accurate[(indexOne, indexOne)] += 1
+                            else:
+                                #index hopping occured
+                                write_out(records, "hopped", fileList)
+                                hopped += 1
+                                tupleDict = (indexOne, indexTwo)
+                                value[tupleDict] += 1
+                        else:
+                            #quality is low
+                            #print("low")
+                            write_out(records, "lowQual", fileList)
+                            lowQuality += 1
                     else:
-                        #sequencing error
+                        #index was not in the dictionary and did not contain N, must be sequencing error
                         write_out(records, "lowQual", fileList)
                         lowQuality += 1
                 #reset records to being blank 2d list
