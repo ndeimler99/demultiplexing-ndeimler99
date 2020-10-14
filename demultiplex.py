@@ -12,6 +12,7 @@ def get_args():
     parser.add_argument("-f3", "--fileThree", help="What is your Read 3 file name? (Index Two)", required = True)
     parser.add_argument("-f4", "--fileFour", help="What is your Read 4 file name? (Read Two)", required = True)
     parser.add_argument("-b", "--barcodes", help = "Index must be in fourth column and sequence in fifth")
+    parser.add_argument("-e", "--error_correct", help="Do you want error correction?", required=False, default=True)
     return parser.parse_args()
 
 args = get_args()
@@ -20,6 +21,7 @@ readTwo = args.fileTwo
 readThree = args.fileThree
 readFour = args.fileFour
 barcodes = args.barcodes
+error_correct = bool(args.error_correct)
 complement = {"A" : "T", "C" : "G", "G" : "C", "T" : "A", "N" : "N"}
 
 def rev_complement(stringInput):
@@ -31,13 +33,45 @@ def rev_complement(stringInput):
     
     return output
 
+def error_correct_barcode(records, indexes):
+    '''THIS CAN ONLY BE USED IF NO BARCODES DIFFER BY LESS THAN TWO NUCLEOTIDES takes the list of list as inputs and checks barcodes for errors and corrects by cardodes by one error'''
+    #create new dictionary that contains a list of the barcodes
+    index_one = records[1][1]
+    index_two = rev_complement(records[2][1])
+
+    if "N" in index_one or index_one not in indexes:
+        #go through dictionary line by line
+        for item in indexes:
+            mistake=0
+            #go through each index one by one
+            for i in range(len(index_one)):
+                if index_one[i] != item[i]:
+                    mistake += 1
+            if mistake == 1:
+                index_one = item
+
+    if "N" in index_two or index_two not in indexes:
+        for item in indexes:
+            mistake=0
+            #go through each index one by one
+            for i in range(len(index_two)):
+                if index_two[i] != item[i]:
+                    mistake += 1
+            if mistake == 1:
+                index_two = item
+
+    records[1][1] = index_one
+    records[2][1] = rev_complement(index_two)
+       
+    return records
+
 def open_files(indexes):
     '''Creates Dictionary of barcodes with names as well as opening output files based on indexes (list)'''
     #find out what column is index and what column is index sequence
     #create dictionary with index as keys and index sequence as barcodes
     fileList = {}
 
-    for item in indexes():
+    for item in indexes:
         #for every barcode create name of barcode "_R1" and "_R2" files
         name = indexes[item] + "_R1"
         fh = open(name, "a")
@@ -51,7 +85,7 @@ def open_files(indexes):
     fileList[name] = unmatched_R1
     name = "Unmatched_R2"
     unmatched_R2 = open(name, "a")
-    fileList[name] = unmatched_R2
+    fileList[name] = unmatched_R2 
     name = "Hopped_R1"
     hopped_R1 = open(name, "a")
     fileList[name] = hopped_R1
@@ -213,6 +247,9 @@ def demultiplex(index, value, accurate):
                 barcodesAppend = records[1][1] + "-" + rev_complement(records[2][1])
                 records[0][0] = records[0][0] + ":" + barcodesAppend
                 records[3][0] = records[3][0] + ":" + barcodesAppend
+                
+                if error_correct == True:
+                    records = error_correct_barcode(records, index)
 
                 indexOne = records[1][1]
                 indexTwo = rev_complement(records[2][1])
@@ -221,7 +258,7 @@ def demultiplex(index, value, accurate):
                         #index contained an N
                         write_out(records, "lowQual", fileList)
                         lowQuality += 1
-                else
+                else:
                     #if the indexes in the index dictionary
                     if indexOne in index and indexTwo in index:
                         #if they pass the quality score check
@@ -258,4 +295,3 @@ def demultiplex(index, value, accurate):
 
 indexes, bars, accurate = create_dict(barcodes)
 demultiplex(indexes, bars, accurate)
-
