@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 Demultiplex.py Help Manual
-
+===========
 Inputs:
 	-f1 = --fileone = File One (Must be FASTQ) - Read One (Actual Sequence of Read One)
 	-f2 = --filetwo = File Two (Must be FASTQ) - Read Two (Index One Sequence)
@@ -21,7 +21,7 @@ Outputs:
 		Tab Delimited Table
 			Contains the Number of all Correct Reads sorted in Descending order by Number of Reads
 			Contains the Number of all permutations of Index Hopped Reads sorted in Descending Order by Number of Reads
-=======
+
 # Description
 	This program (written in Python3) will analyze Illumina FastQ data output and demultiplex the multiplexed data, as well as discard indexed reads in which the indices contain an N or fall below an average quality score of 30.  This program does not, however, determine the quality score of the entire read nor does it error correct low quality indices.  
 ## Inputs:  
