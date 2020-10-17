@@ -1,0 +1,5 @@
+index	index sequence
+c1	TCTTCGAC
+c2	AACAGCGA
+c3	GTCCTAAG
+c4	TATGGCAC
